@@ -2,12 +2,11 @@
 using LibApp.Data;
 using LibApp.Dtos;
 using LibApp.Models;
-using Microsoft.AspNetCore.Http;
+using LibApp.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace LibApp.Controllers.Api
 {
@@ -15,9 +14,12 @@ namespace LibApp.Controllers.Api
     [ApiController]
     public class BooksController : ControllerBase
     {
+        private readonly BooksService _booksService;
+        private readonly IMapper _mapper;
+
         public BooksController(ApplicationDbContext context, IMapper mapper)
         {
-            _context = context;
+            _booksService = new BooksService(context);
             _mapper = mapper;
         }
 
@@ -25,18 +27,14 @@ namespace LibApp.Controllers.Api
         [HttpGet]
         public IEnumerable<BookDto> GetBooks(string query = null)
         {
-            var booksQuery = _context.Books.Where(b => b.NumberAvailable > 0);
+            var booksQuery = _booksService.GetAvailableBooks();
 
             if (!String.IsNullOrWhiteSpace(query))
             {
-                booksQuery = booksQuery.Where(b => b.Name.Contains(query));
+                booksQuery = _booksService.GetByName(query);
             }
 
-            return booksQuery.ToList().Select(_mapper.Map<Book, BookDto>);
+            return booksQuery.Select(_mapper.Map<Book, BookDto>);
         }
-
-
-        private readonly IMapper _mapper;
-        private readonly ApplicationDbContext _context;
     }
 }

@@ -35,6 +35,16 @@ namespace LibApp.Services
             return _context.Genre.ToList();
         }
 
+        public IEnumerable<Book> GetAvailableBooks()
+        {
+           return _context.Books.Where(b => b.NumberAvailable > 0);
+        }
+
+        internal IEnumerable<Book> GetByName(string query)
+        {
+            return _context.Books.Where(b => b.Name.Contains(query));
+        }
+
         public void Create(Book book)
         {
             _context.Books.Add(book);
