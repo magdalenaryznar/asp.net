@@ -56,8 +56,7 @@ namespace LibApp.Controllers
                 Book = new Book()
                 {
                     Id = 0,
-                    ReleaseDate = DateTime.Now.ToShortDateString()
-                }
+                 }
             };
 
             return View("BookForm", viewModel);

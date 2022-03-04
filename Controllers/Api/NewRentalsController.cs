@@ -29,7 +29,7 @@ namespace LibApp.Controllers.Api
 
             var books = _context.Books
                 .Include(b => b.Genre)
-                .Where(b => newRental.BookIds.Contains(b.Id)).ToList();
+                .Where(b => newRental.BookIds != null && newRental.BookIds.Contains(b.Id)).ToList();
 
             foreach (var book in books)
             {

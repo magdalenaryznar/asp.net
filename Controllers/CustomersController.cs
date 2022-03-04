@@ -1,34 +1,27 @@
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using LibApp.Models;
 using LibApp.ViewModels;
 using LibApp.Data;
-using Microsoft.EntityFrameworkCore;
+using LibApp.Services;
 
 namespace LibApp.Controllers
 {
     public class CustomersController : Controller
     {
-        private readonly ApplicationDbContext _context;
-
+        private readonly CustomersService _customersService;
         public CustomersController(ApplicationDbContext context)
         {
-            _context = context;
+            _customersService = new CustomersService(context);
         }
 
         public ViewResult Index()
-        {          
+        {
             return View();
         }
 
         public IActionResult Details(int id)
         {
-            var customer = _context.Customers
-                .Include(c => c.MembershipType)
-                .SingleOrDefault(c => c.Id == id);
+            var customer = _customersService.GetById(id);
 
             if (customer == null)
             {
@@ -40,7 +33,7 @@ namespace LibApp.Controllers
 
         public IActionResult New()
         {
-            var membershipTypes = _context.MembershipTypes.ToList();
+            var membershipTypes = _customersService.GetMemberships();
             var viewModel = new CustomerFormViewModel()
             {
                 MembershipTypes = membershipTypes
@@ -51,7 +44,7 @@ namespace LibApp.Controllers
 
         public IActionResult Edit(int id)
         {
-            var customer = _context.Customers.SingleOrDefault(c => c.Id == id);
+            var customer = _customersService.GetById(id);
             if (customer == null)
             {
                 return NotFound();
@@ -59,7 +52,7 @@ namespace LibApp.Controllers
 
             var viewModel = new CustomerFormViewModel(customer)
             {
-                MembershipTypes = _context.MembershipTypes.ToList()
+                MembershipTypes = _customersService.GetMemberships()
             };
 
             return View("CustomerForm", viewModel);
@@ -73,7 +66,7 @@ namespace LibApp.Controllers
             {
                 var viewModel = new CustomerFormViewModel(customer)
                 {
-                    MembershipTypes = _context.MembershipTypes.ToList()
+                    MembershipTypes = _customersService.GetMemberships()
                 };
 
                 return View("CustomerForm", viewModel);
@@ -81,20 +74,15 @@ namespace LibApp.Controllers
 
             if (customer.Id == 0)
             {
-                _context.Customers.Add(customer);
+                _customersService.Create(customer);
 
             }
             else
             {
-                var customerInDb = _context.Customers.Single(c => c.Id == customer.Id);
-                customerInDb.Name = customer.Name;
-                customerInDb.Birthdate = customer.Birthdate;
-                customerInDb.MembershipTypeId = customer.MembershipTypeId;
-                customerInDb.HasNewsletterSubscribed = customer.HasNewsletterSubscribed;
+                _customersService.Edit(customer);
             }
 
-            _context.SaveChanges();
-
+ 
             return RedirectToAction("Index", "Customers");
         }
     }
