@@ -1,28 +1,30 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace LibApp.Models
 {
     public class Book
     {
         public int Id { get; set; }
-		[Required]
+		[Required(ErrorMessage ="Name is required")]
 		[StringLength(255)]
 		public string Name { get; set; }
-		[Required]
+		[Required(ErrorMessage = "Author is required")]
 		public string AuthorName { get; set; }
-		[Required]
 		public Genre Genre { get; set; }
-		[Required]
+		[Required(ErrorMessage = "Choose genre")]
 		[Display(Name="Genre")]
 		public byte GenreId { get; set; }
+
 		public DateTime DateAdded { get; set; }
 		[Display(Name="Release Date")]
+
+		[Required(ErrorMessage = "Type release date")]
 		public DateTime ReleaseDate { get; set; }
 		[Display(Name = "Number in Stock")]
+
+		[Required(ErrorMessage = "Type value between 1 and 20")]
+		[Range(1, 20)]
 		public int NumberInStock { get; set; }
 		public int NumberAvailable { get; set; }
 	}
