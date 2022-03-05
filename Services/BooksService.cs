@@ -1,7 +1,6 @@
 ﻿using LibApp.Data;
 using LibApp.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -40,8 +39,9 @@ namespace LibApp.Services
            return _context.Books.Where(b => b.NumberAvailable > 0);
         }
 
-        internal IEnumerable<Book> GetByName(string query)
+        public IEnumerable<Book> GetByName(string query)
         {
+            if (string.IsNullOrEmpty(query)) return _context.Books;
             return _context.Books.Where(b => b.Name.Contains(query));
         }
 

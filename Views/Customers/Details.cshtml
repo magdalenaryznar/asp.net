@@ -13,3 +13,6 @@
         <li>Birthdate: @Model.Birthdate.Value.ToShortDateString()</li>
     }
 </ul>
+
+@Html.ActionLink("Edit", "Edit", "Customers", new { id = Model.Id}, new { @class = "btn btn-primary"})
+ 
