@@ -9,6 +9,7 @@ using System.Net.Http;
 using Microsoft.AspNetCore.Http;
 using System.Net;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LibApp.Controllers
 {
@@ -36,6 +37,7 @@ namespace LibApp.Controllers
             return View(book);
         }
 
+        [Authorize(Roles = "Owner,StoreManager")]
         public IActionResult Edit(int id)
         {
             var book = GetBookFromApi(id).Result;
@@ -53,6 +55,7 @@ namespace LibApp.Controllers
             return View("BookForm", viewModel);
         }
 
+        [Authorize(Roles = "Owner,StoreManager")]
         public IActionResult New()
         {
             var genres = _booksService.GetGenres();
@@ -70,6 +73,7 @@ namespace LibApp.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Owner,StoreManager")]
         public IActionResult Save(Book book)
         {
             if (!ModelState.IsValid)

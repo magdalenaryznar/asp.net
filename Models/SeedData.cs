@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using LibApp.Data;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -89,8 +90,82 @@ namespace LibApp.Models
                     MembershipTypeId = 1
                 });
 
+
+                context.Genre.AddRange(
+                    new Genre { Name = "Sci-fi" },
+                    new Genre()
+                    {
+                        Name = "Other"
+                    });
+
+
                 context.SaveChanges();
             }
         }
+
+        public static void SeedRolesAndUsers(UserManager<User> userManager, RoleManager<Role> roleManager)
+        {
+
+            
+            if (!roleManager.RoleExistsAsync("User").Result)
+            {
+                roleManager.CreateAsync(new Role() { Name = "User" }).Wait();
+            }
+
+            if (!roleManager.RoleExistsAsync("Owner").Result)
+            {
+                roleManager.CreateAsync(new Role() { Name = "Owner" }).Wait();
+            }
+
+            if (!roleManager.RoleExistsAsync("StoreManager").Result)
+            {
+                roleManager.CreateAsync(new Role() { Name = "StoreManager" }).Wait();
+            }
+
+            if (userManager.FindByEmailAsync("johndoe@test.com").Result == null)
+            {
+                User user = new User();
+                user.UserName = "user@test.com";
+                user.Email = "user@test.com";
+
+                IdentityResult result = userManager.CreateAsync(user, "P@ssw0rd1!").Result;
+
+                if (result.Succeeded)
+                {
+                    userManager.AddToRoleAsync(user, "User").Wait();
+                }
+            }
+
+
+            if (userManager.FindByEmailAsync("alex@test.com").Result == null)
+            {
+                User user = new User();
+                user.UserName = "storemanager@test.com";
+                user.Email = "storemanager@test.com";
+
+                IdentityResult result = userManager.CreateAsync(user, "P@ssw0rd1!").Result;
+
+                if (result.Succeeded)
+                {
+                    userManager.AddToRoleAsync(user, "StoreManager").Wait();
+                }
+            }
+
+            if (userManager.FindByEmailAsync("alex@test.com").Result == null)
+            {
+                User user = new User();
+                user.UserName = "owner@test.com";
+                user.Email = "owner@test.com";
+
+                IdentityResult result = userManager.CreateAsync(user, "P@ssw0rd1!").Result;
+
+                if (result.Succeeded)
+                {
+                    userManager.AddToRoleAsync(user, "Owner").Wait();
+                }
+            }
+        }
     }
+
+
 }

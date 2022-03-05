@@ -23,6 +23,16 @@ namespace LibApp.Controllers.Api
             _mapper = mapper;
         }
 
+
+        // GET api/books/
+        [HttpGet("all")]
+        public IEnumerable<BookDto> GetAllBooks()
+        {
+            var booksQuery = _booksService.GetBooks();
+
+            return booksQuery.Select(_mapper.Map<Book, BookDto>);
+        }
+
         // GET api/books/
         [HttpGet("books")]
         public IEnumerable<BookDto> GetBooks(string query = null)
@@ -48,5 +58,15 @@ namespace LibApp.Controllers.Api
 
             return result;
         }
+
+        // DELETE /api/customers
+        [HttpDelete("{id}")]
+        public void DeleteCustomer(int id)
+        {
+            var customerInDb = _booksService.GetBookById(id);
+
+            _booksService.Delete(id);
+        }
+
     }
 }

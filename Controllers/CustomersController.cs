@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Net;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LibApp.Controllers
 {
@@ -21,11 +22,13 @@ namespace LibApp.Controllers
             _httpContextAccessor = httpContextAccessor;
         }
 
+        [Authorize(Roles = "Owner,StoreManager")]
         public ViewResult Index()
         {
             return View();
         }
 
+        [Authorize(Roles = "Owner,StoreManager")]
         public IActionResult Details(int id)
         {
             var customer = GetCustomerDetailsFromApi(id).Result;
@@ -38,6 +41,7 @@ namespace LibApp.Controllers
             return View(customer);
         }
 
+        [Authorize(Roles = "Owner")]
         public IActionResult New()
         {
             var membershipTypes = _customersService.GetMemberships();
@@ -49,6 +53,7 @@ namespace LibApp.Controllers
             return View("CustomerForm", viewModel);
         }
 
+        [Authorize(Roles = "Owner")]
         public IActionResult Edit(int id)
         {
             var customer = _customersService.GetById(id);
@@ -65,6 +70,7 @@ namespace LibApp.Controllers
             return View("CustomerForm", viewModel);
         }
 
+        [Authorize(Roles = "Owner")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Save(Customer customer)

@@ -5,21 +5,25 @@
 
 <h2>Customers</h2>
 
-<p>
-    <a class="btn btn-primary" asp-action="New">New Customer</a>
-</p>
-
+@if (User.IsInRole("Owner"))
+{
+    <p>
+        <a class="btn btn-primary" asp-action="New">New Customer</a>
+    </p>
+}
 
 <table id="customers" class="table table-hover">
     <thead>
         <tr>
             <th>Customer</th>
             <th>Membership Type</th>
-            <th>Delete</th>
+               @if (User.IsInRole("Owner"))
+            {
+                <th>Delete</th>
+            }
         </tr>
     </thead>
     <tbody>
-            
     </tbody>
 </table>
 
@@ -28,12 +32,10 @@
 { 
     <script>
         $(document).ready(function () {
-            $("#customers").DataTable({
-                ajax: {
-                    url: "/api/customers",
-                    dataSrc: ""
-                },
-                columns: [
+
+            var isUserRole =  @Json.Serialize(@User.IsInRole("Owner"));
+
+        var columnsData = [
                     {
                         data: "name",
                         render: function (data, type, customer) {
@@ -49,7 +51,19 @@
                             return "<button class='btn btn-secondary js-delete' data-customer-id=" + data + ">Delete</button>";
                         }
                     }
-                ]
+                ];
+            
+            if(!isUserRole) {
+               columnsData.pop();
+            }
+
+
+            $("#customers").DataTable({
+                ajax: {
+                    url: "/api/customers",
+                    dataSrc: ""
+                },
+                columns:  columnsData
             });
         });
     </script>

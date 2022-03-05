@@ -15,6 +15,11 @@ namespace LibApp.Data
         public DbSet<Genre> Genre { get; set; }
         public DbSet<Rental> Rentals { get; set; }
 
+        public DbSet<User> User { get; set; }
+
+        public DbSet<Role> Roles { get; set; }
+
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {

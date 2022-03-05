@@ -1,6 +1,7 @@
 ﻿using LibApp.Data;
 using LibApp.Models;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -61,6 +62,14 @@ namespace LibApp.Services
             bookInDb.DateAdded = book.DateAdded;
             bookInDb.NumberInStock = book.NumberInStock;
 
+            _context.SaveChanges();
+        }
+
+        public void Delete(int id)
+        {
+            var bookInDb = _context.Books.FirstOrDefault(c => c.Id == id);
+
+            _context.Remove(bookInDb);
             _context.SaveChanges();
         }
     }

@@ -1,13 +1,8 @@
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using LibApp.Models;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Identity;
 
 namespace LibApp
 {
@@ -22,6 +17,11 @@ namespace LibApp
                 var services = scope.ServiceProvider;
 
                 SeedData.Initialize(services);
+
+                var userManager = services.GetRequiredService<UserManager<User>>();
+                var roleManager = services.GetRequiredService<RoleManager<Role>>();
+
+                SeedData.SeedRolesAndUsers(userManager, roleManager);
             }
 
             host.Run();

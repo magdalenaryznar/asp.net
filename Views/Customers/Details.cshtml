@@ -1,4 +1,6 @@
+@using Microsoft.AspNetCore.Identity
 @model LibApp.Models.Customer
+@inject UserManager<User> UserManager
 
 @{
     ViewBag.Title = Model.Name;
@@ -14,5 +16,8 @@
     }
 </ul>
 
-@Html.ActionLink("Edit", "Edit", "Customers", new { id = Model.Id}, new { @class = "btn btn-primary"})
+@if (User.IsInRole("Owner"))
+{
+    Html.ActionLink("Edit", "Edit", "Customers", new { id = Model.Id }, new { @class = "btn btn-primary" });
+}
  
