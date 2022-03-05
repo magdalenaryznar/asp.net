@@ -4,15 +4,22 @@ using LibApp.Models;
 using LibApp.ViewModels;
 using LibApp.Data;
 using LibApp.Services;
+using System.Threading.Tasks;
+using System.Net.Http;
+using Microsoft.AspNetCore.Http;
+using System.Net;
+using Newtonsoft.Json;
 
 namespace LibApp.Controllers
 {
     public class BooksController : Controller
     {
         private BooksService _booksService;
-        public BooksController(ApplicationDbContext context)
+        private IHttpContextAccessor _httpContextAccessor;
+        public BooksController(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
         {
             _booksService = new BooksService(context);
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public IActionResult Index()
@@ -24,14 +31,14 @@ namespace LibApp.Controllers
 
         public IActionResult Details(int id)
         {
-            var book = _booksService.GetBookById(id);
+            var book = GetBookFromApi(id).Result;
 
             return View(book);
         }
 
         public IActionResult Edit(int id)
         {
-            var book = _booksService.GetBookById(id);
+            var book = GetBookFromApi(id).Result;
             if (book == null)
             {
                 return NotFound();
@@ -56,7 +63,7 @@ namespace LibApp.Controllers
                 Book = new Book()
                 {
                     Id = 0,
-                 }
+                }
             };
 
             return View("BookForm", viewModel);
@@ -86,6 +93,26 @@ namespace LibApp.Controllers
 
 
             return RedirectToAction("Index", "Books");
+        }
+
+        private async Task<Book> GetBookFromApi(int id)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                var apiUrl = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}";
+                var result = await httpClient.GetAsync($"{apiUrl}/api/books/{id}");
+
+                if (result.StatusCode == HttpStatusCode.NotFound)
+                {
+                    return null;
+                }
+
+                var content = await result.Content.ReadAsStringAsync();
+
+                var book = JsonConvert.DeserializeObject<Book>(content);
+
+                return book;
+            }
         }
     }
 }

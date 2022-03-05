@@ -24,7 +24,7 @@ namespace LibApp.Controllers.Api
         }
 
         // GET api/books/
-        [HttpGet]
+        [HttpGet("books")]
         public IEnumerable<BookDto> GetBooks(string query = null)
         {
             var booksQuery = _booksService.GetAvailableBooks();
@@ -35,6 +35,18 @@ namespace LibApp.Controllers.Api
             }
 
             return booksQuery.Select(_mapper.Map<Book, BookDto>);
+        }
+
+
+        // GET api/books/
+        [HttpGet("{id}")]
+        public BookDto GetBooksById(int id)
+        {
+            var book = _booksService.GetBookById(id);
+
+            var result = _mapper.Map<BookDto>(book);
+
+            return result;
         }
     }
 }

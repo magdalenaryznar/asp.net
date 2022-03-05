@@ -1,4 +1,6 @@
 using LibApp.Data;
+using LibApp.Dtos;
+using LibApp.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -32,7 +34,12 @@ namespace LibApp
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddAutoMapper(config =>
+            {
+                config.CreateMap<Genre, GenreDto>(AutoMapper.MemberList.Destination);
+                config.CreateMap<Book, BookDto>(AutoMapper.MemberList.Destination);
+                config.AddMaps(AppDomain.CurrentDomain.GetAssemblies());
+            });
 
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
